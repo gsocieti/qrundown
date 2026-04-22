@@ -8,753 +8,671 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
-  --bg: #F5F3EE;
-  --surface: #FFFFFF;
-  --surface2: #EDEAE3;
-  --border: rgba(0,0,0,0.10);
-  --border-strong: rgba(0,0,0,0.18);
-  --text: #1A1915;
-  --text2: #6B6860;
-  --text3: #9B9890;
-  --accent: #1D4E2E;
-  --accent-light: #E8F1EB;
-  --accent-text: #1D4E2E;
-  --danger: #8B2020;
-  --danger-light: #FAEAEA;
-  --warn: #7A4F10;
-  --warn-light: #FDF3E3;
-  --radius: 14px;
-  --radius-sm: 8px;
+  --bg:#F5F3EE;--surface:#FFFFFF;--surface2:#EDEAE3;
+  --border:rgba(0,0,0,0.10);--border-strong:rgba(0,0,0,0.18);
+  --text:#1A1915;--text2:#6B6860;--text3:#9B9890;
+  --accent:#1D4E2E;--accent-light:#E8F1EB;--accent-text:#1D4E2E;
+  --danger:#8B2020;--danger-light:#FAEAEA;
+  --warn:#7A4F00;--warn-light:#FEF3CD;
+  --radius:14px;--radius-sm:8px;
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* ─ HEADER ─ */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px 0;position:sticky;top:0;z-index:50}
+.header-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.header h1{font-size:17px;font-weight:600;flex:1}
+.status-dot{width:8px;height:8px;background:#2D8A4E;border-radius:50%;flex-shrink:0}
+.tab-bar{display:flex;gap:2px;background:var(--surface2);border-radius:12px;padding:4px;margin-bottom:14px}
+.tab{flex:1;padding:8px 4px;font-size:12.5px;font-weight:500;text-align:center;border-radius:9px;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:.15s}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 15px;
-}
+/* ─ LAYOUT ─ */
+.main{padding:16px 20px 100px;max-width:480px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block;font-family:'DM Mono',monospace;letter-spacing:.04em}
 
-/* HEADER */
-.header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 20px 12px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.header h1 {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.header p {
-  font-size: 12px;
-  color: var(--text2);
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-}
-.status-dot {
-  width: 8px; height: 8px;
-  background: #2D8A4E;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 6px;
-}
+input,select{width:100%;padding:10px 12px;font-size:14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--bg);margin-bottom:8px;outline:none;font-family:'DM Sans',sans-serif;color:var(--text)}
+input:focus,select:focus{border-color:var(--accent);background:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;font-size:14px;font-weight:500;border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border-strong);transition:.15s;font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);width:100%}
+.btn-primary:hover:not(:disabled){background:#163d22}
+.btn-danger{border-color:var(--danger);color:var(--danger);background:var(--danger-light)}
+.btn-warn{border-color:var(--warn);color:var(--warn);background:var(--warn-light)}
+.btn-sm{padding:5px 10px;font-size:12px}
 
-/* TAB BAR */
-.tab-bar {
-  display: flex;
-  background: var(--surface2);
-  border-radius: 12px;
-  padding: 4px;
-  margin: 14px 20px 0;
-  gap: 2px;
-}
-.tab {
-  flex: 1;
-  padding: 8px 6px;
-  font-size: 12.5px;
-  font-weight: 500;
-  text-align: center;
-  border-radius: 9px;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  transition: all 0.15s ease;
-  font-family: 'DM Sans', sans-serif;
-}
-.tab.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
+/* ─ EXPIRY PILL SELECTOR ─ */
+.expiry-group{display:flex;gap:6px;margin-bottom:8px}
+.expiry-pill{flex:1;padding:8px 4px;font-size:12.5px;font-weight:500;text-align:center;border-radius:100px;cursor:pointer;border:1.5px solid var(--border-strong);background:var(--bg);color:var(--text2);transition:.15s;font-family:'DM Mono',monospace}
+.expiry-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-/* MAIN CONTENT */
-.main {
-  padding: 16px 20px 100px;
-  max-width: 480px;
-  margin: 0 auto;
-}
+/* ─ STAF CARD ─ */
+.staf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:.2s}
+.staf-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.staf-info{flex:1;min-width:0}
+.staf-nama{font-size:14px;font-weight:600}
+.staf-email{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.section { display: none; }
-.section.active { display: block; }
+/* ─ ACARA ROW ─ */
+.acara-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.acara-top{display:flex;align-items:flex-start;gap:10px}
+.acara-info{flex:1;min-width:0}
+.acara-nama{font-weight:600;font-size:14px;margin-bottom:2px}
+.acara-meta{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace}
+.acara-actions{display:flex;gap:6px;flex-shrink:0}
+.acara-footer{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.expiry-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace}
+.expiry-active{background:var(--accent-light);color:var(--accent-text)}
+.expiry-expired{background:var(--danger-light);color:var(--danger)}
 
-/* CARDS */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-}
+/* ─ MODAL ─ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:100;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px}
+.modal-handle{width:36px;height:4px;background:var(--surface2);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-weight:600;font-size:16px;text-align:center;margin-bottom:2px}
+.modal-sub{font-size:12px;color:var(--text3);text-align:center;margin-bottom:18px;font-family:'DM Mono',monospace}
+.qr-wrap{background:#fff;padding:18px;display:flex;justify-content:center;margin-bottom:16px;border:1px solid var(--border);border-radius:12px}
+.modal-divider{height:1px;background:var(--border);margin:16px 0}
+.reset-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px}
 
-.section-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 10px;
-  font-family: 'DM Mono', monospace;
-}
+/* ─ TOAST ─ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;z-index:300;transition:.3s;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-/* FORM ELEMENTS */
-input, select, textarea {
-  width: 100%;
-  padding: 10px 12px;
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  color: var(--text);
-  margin-bottom: 8px;
-  outline: none;
-  transition: border-color 0.15s;
-  -webkit-appearance: none;
-}
-input:focus, select:focus { border-color: var(--accent); background: #fff; }
-input::placeholder { color: var(--text3); }
-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B6860' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer; }
+/* ─ LOG ─ */
+.log-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.log-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.log-ok-icon{background:var(--accent-light);color:var(--accent)}
+.log-fail-icon{background:var(--danger-light);color:var(--danger)}
+.log-email{font-family:'DM Mono',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-acara{color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
 
-/* BUTTONS */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: 'DM Sans', sans-serif;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text);
-  transition: all 0.12s;
-  white-space: nowrap;
-}
-.btn:active { transform: scale(0.97); }
-.btn-full { width: 100%; }
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-.btn-primary:hover { background: #154023; }
-.btn-sm { padding: 6px 10px; font-size: 12px; }
-.btn-ghost { border-color: transparent; background: transparent; color: var(--text2); }
-.btn-danger { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+/* ══════════════════════════════════════
+   SCAN GATE — muncul saat ?eventId= di URL
+══════════════════════════════════════ */
+#scan-gate{display:none;min-height:100vh;padding:0}
+#scan-gate.active{display:block}
 
-/* BADGES */
-.badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 500;
-  font-family: 'DM Mono', monospace;
-}
-.badge-ok { background: var(--accent-light); color: var(--accent-text); }
-.badge-warn { background: var(--warn-light); color: var(--warn); }
-.badge-err { background: var(--danger-light); color: var(--danger); }
-.badge-gray { background: var(--surface2); color: var(--text2); }
+.gate-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:8px}
+.gate-header-dot{width:8px;height:8px;background:#2D8A4E;border-radius:50%}
+.gate-header-title{font-size:15px;font-weight:600}
 
-/* EVENT ROWS */
-.event-item {
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.event-item:last-child { border-bottom: none; padding-bottom: 0; }
-.event-item:first-child { padding-top: 0; }
-.event-content { flex: 1; min-width: 0; }
-.event-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.event-meta { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
-.event-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: flex-start; padding-top: 2px; }
+.gate-body{max-width:400px;margin:0 auto;padding:32px 20px 40px}
+.gate-event-card{background:var(--accent);color:#fff;border-radius:var(--radius);padding:16px 18px;margin-bottom:28px}
+.gate-event-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;font-family:'DM Mono',monospace}
+.gate-event-name{font-size:17px;font-weight:600;margin-bottom:2px}
+.gate-event-date{font-size:12px;opacity:.75;font-family:'DM Mono',monospace}
 
-/* STAFF ROWS */
-.staff-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.staff-item:last-child { border-bottom: none; padding-bottom: 0; }
-.staff-item:first-child { padding-top: 0; }
-.avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--accent-light);
-  color: var(--accent-text);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 600;
-  flex-shrink: 0;
-}
-.staff-name { font-size: 14px; font-weight: 500; }
-.staff-email { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; }
-.staff-content { flex: 1; min-width: 0; overflow: hidden; }
-.staff-email { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gate-heading{font-size:20px;font-weight:600;margin-bottom:6px}
+.gate-sub{font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.55}
 
-/* LOG ROWS */
-.log-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  gap: 8px;
-}
-.log-item:last-child { border-bottom: none; padding-bottom: 0; }
-.log-item:first-child { padding-top: 0; }
-.log-name { font-size: 13px; font-weight: 500; }
-.log-meta { font-size: 11.5px; color: var(--text2); font-family: 'DM Mono', monospace; margin-top: 2px; }
-.log-time { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; flex-shrink: 0; }
+/* State: loading */
+.gate-loading{text-align:center;padding:40px 0;color:var(--text2);font-size:14px;display:none}
+.gate-loading.show{display:block}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* SCAN RESULT */
-.scan-result {
-  border-radius: var(--radius);
-  padding: 20px;
-  text-align: center;
-  margin-top: 12px;
-}
-.scan-result.ok { background: var(--accent-light); border: 1px solid rgba(29,78,46,0.2); }
-.scan-result.fail { background: var(--danger-light); border: 1px solid rgba(139,32,32,0.2); }
-.scan-icon { font-size: 36px; margin-bottom: 8px; }
-.scan-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.scan-sub { font-size: 13px; opacity: 0.8; }
-.scan-link {
-  display: block;
-  margin-top: 14px;
-  padding: 10px 16px;
-  background: var(--accent);
-  color: #fff;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-/* EMPTY STATE */
-.empty {
-  text-align: center;
-  color: var(--text3);
-  font-size: 13px;
-  padding: 28px 0;
-}
-
-/* SECTION HEADER */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-/* QR MODAL */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 200;
-  padding: 0;
-}
-.modal-overlay.open { display: flex; }
-.modal-sheet {
-  background: var(--surface);
-  border-radius: 20px 20px 0 0;
-  padding: 20px 20px 40px;
-  width: 100%;
-  max-width: 480px;
-  animation: slideUp 0.2s ease;
-}
-@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.modal-handle {
-  width: 36px; height: 4px;
-  background: var(--surface2);
-  border-radius: 2px;
-  margin: 0 auto 18px;
-}
-.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.modal-sub { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; margin-bottom: 18px; }
-.qr-wrapper {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-.modal-actions { display: flex; gap: 8px; }
-.modal-actions .btn { flex: 1; }
-
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--text);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 300;
-  transition: transform 0.25s ease;
-  white-space: nowrap;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* STAT CHIPS */
-.stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.stat-chip {
-  flex: 1;
-  background: var(--surface2);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  text-align: center;
-}
-.stat-num { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; }
-.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-/* DIVIDER */
-.divider { border: none; border-top: 1px solid var(--border); margin: 4px 0 12px; }
+/* State: result */
+.gate-result{border-radius:var(--radius);padding:18px;margin-top:20px;display:none}
+.gate-result.show{display:block}
+.gate-result.success{background:var(--accent-light);border:1.5px solid var(--accent)}
+.gate-result.fail{background:var(--danger-light);border:1.5px solid var(--danger)}
+.gate-result-title{font-weight:600;font-size:15px;margin-bottom:6px}
+.gate-result.success .gate-result-title{color:var(--accent)}
+.gate-result.fail .gate-result-title{color:var(--danger)}
+.gate-result-body{font-size:13px;line-height:1.5;margin-bottom:14px;color:var(--text)}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <h1><span class="status-dot"></span>QR Rundown</h1>
-      <p>BIRO PROTOKOL · SISTEM DISTRIBUSI</p>
-    </div>
+<!-- ════════════════════════════════════════
+     SCAN GATE
+════════════════════════════════════════ -->
+<div id="scan-gate">
+  <div class="gate-header">
+    <div class="gate-header-dot"></div>
+    <div class="gate-header-title">QR Rundown — Biro Protokol</div>
   </div>
-  <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('acara')">Acara</button>
-    <button class="tab" onclick="switchTab('staf')">Staf</button>
-    <button class="tab" onclick="switchTab('scan')">Verifikasi</button>
-    <button class="tab" onclick="switchTab('log')">Log</button>
+  <div class="gate-body">
+    <div id="gate-event-card" class="gate-event-card" style="display:none">
+      <div class="gate-event-label">Acara</div>
+      <div class="gate-event-name" id="gate-event-name">—</div>
+      <div class="gate-event-date" id="gate-event-date"></div>
+    </div>
+
+    <!-- Form input email -->
+    <div id="gate-form">
+      <div class="gate-heading">Verifikasi Identitas</div>
+      <div class="gate-sub">Masukkan email yang terdaftar sebagai staf untuk mendapatkan akses rundown.</div>
+      <input type="email" id="gate-email" placeholder="emailkamu@gmail.com" autocomplete="email">
+      <button class="btn btn-primary" id="gate-btn" onclick="submitGate()">Verifikasi Akses →</button>
+    </div>
+
+    <!-- Loading spinner -->
+    <div class="gate-loading" id="gate-loading">
+      <div class="spinner"></div>
+      Memverifikasi...
+    </div>
+
+    <!-- Result -->
+    <div class="gate-result" id="gate-result">
+      <div class="gate-result-title" id="gate-result-title"></div>
+      <div class="gate-result-body" id="gate-result-body"></div>
+      <a id="gate-drive-link" href="#" target="_blank" class="btn btn-primary" style="text-decoration:none;display:none">
+        Buka Rundown →
+      </a>
+      <button id="gate-retry-btn" class="btn" style="width:100%;display:none" onclick="resetGate()">Coba Lagi</button>
+    </div>
   </div>
 </div>
 
-<div class="main">
-
-  <!-- ===== ACARA ===== -->
-  <div id="tab-acara" class="section active">
-    <div class="stat-row">
-      <div class="stat-chip">
-        <div class="stat-num" id="stat-total">0</div>
-        <div class="stat-lbl">Total Acara</div>
-      </div>
-      <div class="stat-chip">
-        <div class="stat-num" id="stat-active">0</div>
-        <div class="stat-lbl">QR Aktif</div>
-      </div>
-      <div class="stat-chip">
-        <div class="stat-num" id="stat-scans">0</div>
-        <div class="stat-lbl">Total Scan</div>
-      </div>
+<!-- ════════════════════════════════════════
+     ADMIN PANEL
+════════════════════════════════════════ -->
+<div id="admin-panel">
+  <div class="header">
+    <div class="header-top">
+      <span class="status-dot"></span>
+      <h1>QR Rundown</h1>
     </div>
-
-    <div class="card">
-      <div class="section-label">Tambah acara baru</div>
-      <input type="text" id="ev-name" placeholder="Nama acara...">
-      <input type="datetime-local" id="ev-date">
-      <input type="url" id="ev-url" placeholder="https://drive.google.com/drive/folders/...">
-      <select id="ev-expiry">
-        <option value="1">QR berlaku 1 jam</option>
-        <option value="3">QR berlaku 3 jam</option>
-        <option value="12">QR berlaku 12 jam</option>
-        <option value="24" selected>QR berlaku 24 jam</option>
-        <option value="72">QR berlaku 3 hari</option>
-        <option value="0">One-time use (sekali scan per email)</option>
-      </select>
-      <button class="btn btn-primary btn-full" onclick="addEvent()">+ Tambah Acara</button>
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('acara')">Acara</button>
+      <button class="tab" onclick="switchTab('staf')">Staf</button>
+      <button class="tab" onclick="switchTab('scan')">Verifikasi</button>
+      <button class="tab" onclick="switchTab('log')">Log</button>
     </div>
+  </div>
 
-    <div class="section-header">
-      <span class="section-label" style="margin:0">Daftar Acara</span>
-    </div>
-    <div class="card" id="event-list-wrap">
+  <div class="main">
+
+    <!-- ── TAB ACARA ── -->
+    <div id="tab-acara" class="section active">
+      <div class="card">
+        <span class="label">+ Tambah Acara</span>
+        <input type="text"  id="ac-nama" placeholder="Nama Acara...">
+        <input type="text"  id="ac-url"  placeholder="Link Google Drive (Anyone with link)...">
+        <input type="date"  id="ac-tgl">
+        <span class="label" style="margin-top:4px">Durasi QR Aktif</span>
+        <div class="expiry-group" id="ac-expiry-group">
+          <div class="expiry-pill active" data-val="1"  onclick="selectExpiry(this)">1 Hari</div>
+          <div class="expiry-pill"        data-val="3"  onclick="selectExpiry(this)">3 Hari</div>
+          <div class="expiry-pill"        data-val="7"  onclick="selectExpiry(this)">7 Hari</div>
+          <div class="expiry-pill"        data-val="0"  onclick="selectExpiry(this)">1× Pakai</div>
+        </div>
+        <button class="btn btn-primary" onclick="simpanAcara()">Simpan Acara</button>
+      </div>
       <div id="event-list"></div>
     </div>
-  </div>
 
-  <!-- ===== STAF ===== -->
-  <div id="tab-staf" class="section">
-    <div class="card">
-      <div class="section-label">Tambah staf authorized</div>
-      <input type="text" id="sf-name" placeholder="Nama lengkap...">
-      <input type="email" id="sf-email" placeholder="email@gmail.com">
-      <button class="btn btn-primary btn-full" onclick="addStaff()">+ Tambah Staf</button>
-    </div>
-
-    <div class="section-header">
-      <span class="section-label" style="margin:0">Staf Terdaftar (<span id="staff-count">0</span>)</span>
-      <button class="btn btn-sm btn-ghost" onclick="exportStaff()">Ekspor CSV</button>
-    </div>
-    <div class="card">
+    <!-- ── TAB STAF ── -->
+    <div id="tab-staf" class="section">
+      <div class="card">
+        <span class="label">+ Tambah Staf</span>
+        <input type="text"  id="st-nama"  placeholder="Nama Lengkap...">
+        <input type="email" id="st-email" placeholder="Email Staf...">
+        <button class="btn btn-primary" onclick="simpanStaf()">Tambah Staf</button>
+      </div>
       <div id="staff-list"></div>
     </div>
-  </div>
 
-  <!-- ===== SCAN / VERIFIKASI ===== -->
-  <div id="tab-scan" class="section">
-    <div class="card">
-      <div class="section-label">Verifikasi akses rundown</div>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">
-        Staf memasukkan email untuk mendapat akses ke Google Drive rundown. Sistem akan memverifikasi secara otomatis.
-      </p>
-      <select id="scan-ev-sel">
-        <option value="">— Pilih acara —</option>
-      </select>
-      <input type="email" id="scan-email" placeholder="Email staf...">
-      <button class="btn btn-primary btn-full" onclick="doVerify()">Verifikasi Akses →</button>
+    <!-- ── TAB VERIFIKASI MANUAL ── -->
+    <div id="tab-scan" class="section">
+      <div class="card">
+        <span class="label">Verifikasi Manual</span>
+        <select id="scan-ev-sel"><option value="">Pilih Acara...</option></select>
+        <input type="email" id="scan-email" placeholder="Email Staf...">
+        <button class="btn btn-primary" onclick="doVerify(event)">Verifikasi →</button>
+      </div>
+      <div id="scan-output"></div>
     </div>
-    <div id="scan-output"></div>
-  </div>
 
-  <!-- ===== LOG ===== -->
-  <div id="tab-log" class="section">
-    <div class="section-header">
-      <span class="section-label" style="margin:0">Riwayat Akses</span>
-      <button class="btn btn-sm btn-ghost" onclick="clearLogs()">Hapus</button>
+    <!-- ── TAB LOG ── -->
+    <div id="tab-log" class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span class="label" style="margin:0">Riwayat Akses</span>
+        <button class="btn btn-sm" onclick="doClearLog()">Hapus Semua</button>
+      </div>
+      <div class="card" id="log-list"><span style="color:var(--text3);font-size:13px">Belum ada data.</span></div>
     </div>
-    <div class="card">
-      <div id="log-list"></div>
-    </div>
-  </div>
 
-</div><!-- /main -->
+  </div><!-- /main -->
+</div><!-- /admin-panel -->
 
-<!-- QR MODAL -->
-<div class="modal-overlay" id="qr-modal" onclick="handleModalClick(event)">
+<!-- ── MODAL QR ── -->
+<div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="qr-modal-name">—</div>
-    <div class="modal-sub" id="qr-modal-meta">—</div>
-    <div class="qr-wrapper">
-      <div id="qr-render"></div>
+    <div class="modal-title" id="qr-modal-name">QR Code</div>
+    <div class="modal-sub"  id="qr-modal-sub">Scan untuk akses rundown</div>
+    <div class="qr-wrap"><div id="qr-render"></div></div>
+    <button class="btn btn-primary" onclick="downloadQR()" style="margin-bottom:8px">Unduh PNG</button>
+    <button class="btn" style="width:100%;margin-bottom:0" onclick="closeQR()">Tutup</button>
+
+    <div class="modal-divider"></div>
+    <div class="reset-label">⟳ Perpanjang / Reset QR</div>
+    <div class="expiry-group" id="modal-expiry-group">
+      <div class="expiry-pill active" data-val="1" onclick="selectModalExpiry(this)">1 Hari</div>
+      <div class="expiry-pill"        data-val="3" onclick="selectModalExpiry(this)">3 Hari</div>
+      <div class="expiry-pill"        data-val="7" onclick="selectModalExpiry(this)">7 Hari</div>
+      <div class="expiry-pill"        data-val="0" onclick="selectModalExpiry(this)">1× Pakai</div>
     </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal()">Tutup</button>
-      <button class="btn btn-primary" onclick="downloadQR()">⬇ Unduh PNG</button>
-    </div>
+    <button class="btn btn-warn" style="width:100%" onclick="doResetExpiry()">Reset & Aktifkan Ulang QR</button>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────
-let events = JSON.parse(localStorage.getItem('qr_events') || '[]');
-let staff  = JSON.parse(localStorage.getItem('qr_staff')  || '[]');
-let logs   = JSON.parse(localStorage.getItem('qr_logs')   || '[]');
+const API_URL = 'https://script.google.com/macros/s/AKfycbxoD6yUXfFmxkF47D-oZFoPNk3ChdokqM5U_6cJy7QDr8p0FWHt9SZMj22scwwwdXxa/exec';
 
-// Demo data jika kosong
-if (!events.length) {
-  events = [
-    { id: 'e1', name: 'Kunjungan Menteri', date: '2026-04-22T09:00', url: 'https://drive.google.com/drive/folders/demo1', expiry: 24, usedBy: {}, createdAt: Date.now() - 3600000 },
-    { id: 'e2', name: 'Sidang Paripurna',  date: '2026-04-25T13:00', url: 'https://drive.google.com/drive/folders/demo2', expiry: 0,  usedBy: {}, createdAt: Date.now() - 7200000 }
-  ];
-}
-if (!staff.length) {
-  staff = [
-    { id: 's1', name: 'Dewi Rahayu',    email: 'dewi.rahayu@gmail.com },
-    { id: 's2', name: 'Arif Santoso',   email: 'arif.santoso@gmail.com },
-    { id: 's3', name: 'Siti Nurhaliza', email: 'siti.nurhaliza@gmail.com }
-  ];
-}
+let acaraCache = [];
+let stafCache  = [];
+let activeQRId = null;    // ID acara yang sedang dibuka di modal QR
+let gateEventId = null;   // ID acara dari URL parameter
 
-function save() {
-  localStorage.setItem('qr_events', JSON.stringify(events));
-  localStorage.setItem('qr_staff',  JSON.stringify(staff));
-  localStorage.setItem('qr_logs',   JSON.stringify(logs));
-}
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+window.onload = () => {
+  const params  = new URLSearchParams(window.location.search);
+  const eventId = params.get('eventId');
 
-// ─── TABS ─────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', ['acara','staf','scan','log'][i] === name);
+  if (eventId) {
+    // ── MODE SCAN GATE ──
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('scan-gate').classList.add('active');
+    gateEventId = eventId;
+    initGate(eventId);
+  } else {
+    // ── MODE ADMIN ──
+    loadAll();
+  }
+};
+
+// ════════════════════════════════════════════
+//  SCAN GATE
+// ════════════════════════════════════════════
+async function initGate(eventId) {
+  try {
+    const r = await fetch(`${API_URL}?action=getAcara`);
+    const d = await r.json();
+    const ev = (d.data || []).find(e => e.id === eventId);
+
+    if (!ev) {
+      showGateResult('fail', '✗ Acara Tidak Ditemukan',
+        'QR code ini tidak valid atau acaranya telah dihapus.', false);
+      document.getElementById('gate-form').style.display = 'none';
+      return;
+    }
+
+    // Tampilkan info acara
+    document.getElementById('gate-event-name').textContent = ev.nama;
+    document.getElementById('gate-event-date').textContent = ev.tanggal ? formatTgl(ev.tanggal) : '';
+    document.getElementById('gate-event-card').style.display = 'block';
+
+    // Cek sudah expired sebelum user isi email
+    if (ev.isExpired) {
+      showGateResult('fail', '✗ QR Sudah Expired',
+        'QR code untuk acara ini sudah tidak aktif. Hubungi panitia untuk mendapatkan QR baru.', false);
+      document.getElementById('gate-form').style.display = 'none';
+      return;
+    }
+
+  } catch(_) {
+    document.getElementById('gate-event-date').textContent = 'Gagal memuat info acara';
+  }
+
+  document.getElementById('gate-email').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitGate();
   });
+  document.getElementById('gate-email').focus();
+}
+
+async function submitGate() {
+  const email = document.getElementById('gate-email').value.trim().toLowerCase();
+  if (!email) { showToast('Masukkan email kamu dulu'); return; }
+
+  // Tampilkan loading, sembunyikan form
+  document.getElementById('gate-form').style.display    = 'none';
+  document.getElementById('gate-loading').classList.add('show');
+
+  try {
+    const r = await fetch(
+      `${API_URL}?action=verify&eventId=${encodeURIComponent(gateEventId)}&email=${encodeURIComponent(email)}`
+    );
+    const d = await r.json();
+
+    document.getElementById('gate-loading').classList.remove('show');
+
+    if (d.ok) {
+      showGateResult(
+        'success',
+        '✓ Akses Diberikan',
+        `Halo, ${d.stafNama || email}! Identitasmu telah terverifikasi untuk "${d.namaAcara}". Klik tombol di bawah untuk membuka rundown.`,
+        true,
+        d.driveUrl
+      );
+    } else {
+      showGateResult('fail', '✗ Akses Ditolak', d.msg || 'Verifikasi gagal. Hubungi panitia.', false, null, true);
+    }
+  } catch(_) {
+    document.getElementById('gate-loading').classList.remove('show');
+    showGateResult('fail', 'Koneksi Gagal', 'Tidak dapat terhubung ke server. Periksa koneksi internetmu.', false, null, true);
+  }
+}
+
+function showGateResult(type, title, body, showLink, driveUrl, showRetry) {
+  const el    = document.getElementById('gate-result');
+  const link  = document.getElementById('gate-drive-link');
+  const retry = document.getElementById('gate-retry-btn');
+  el.className = `gate-result show ${type}`;
+  document.getElementById('gate-result-title').textContent = title;
+  document.getElementById('gate-result-body').textContent  = body;
+  link.style.display  = showLink   ? 'flex'  : 'none';
+  retry.style.display = showRetry  ? 'block' : 'none';
+  if (showLink && driveUrl) link.href = driveUrl;
+}
+
+function resetGate() {
+  document.getElementById('gate-result').className = 'gate-result';
+  document.getElementById('gate-form').style.display = 'block';
+  document.getElementById('gate-email').value = '';
+  document.getElementById('gate-email').focus();
+}
+
+// ════════════════════════════════════════════
+//  ADMIN — TAB & LOAD
+// ════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) =>
+    t.classList.toggle('active', ['acara','staf','scan','log'][i] === name));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'scan') populateScanSelect();
-  render();
 }
 
-// ─── RENDER ───────────────────────────────────────────
-function render() {
-  renderStats();
-  renderEvents();
-  renderStaff();
-  renderLogs();
+async function loadAll() { loadAcara(); loadStaf(); loadLog(); }
+
+// ── ACARA ──────────────────────────────────
+async function loadAcara() {
+  try {
+    const r = await fetch(`${API_URL}?action=getAcara`);
+    const d = await r.json();
+    acaraCache = d.data || [];
+    renderAcara();
+  } catch(_) { showToast('Gagal memuat acara'); }
 }
 
-function renderStats() {
-  const now = Date.now();
-  const active = events.filter(e => {
-    if (e.expiry === 0) return true;
-    return (now - e.createdAt) / 3600000 < e.expiry;
-  }).length;
-  const scans = logs.filter(l => l.ok).length;
-  document.getElementById('stat-total').textContent  = events.length;
-  document.getElementById('stat-active').textContent = active;
-  document.getElementById('stat-scans').textContent  = scans;
-}
-
-function getStatus(e) {
-  if (e.expiry === 0) return 'one-time';
-  if ((Date.now() - e.createdAt) / 3600000 >= e.expiry) return 'expired';
-  return 'active';
-}
-
-function renderEvents() {
+function renderAcara() {
   const el = document.getElementById('event-list');
-  if (!events.length) { el.innerHTML = '<div class="empty">Belum ada acara. Tambah acara di atas.</div>'; return; }
-  el.innerHTML = events.map(e => {
-    const st = getStatus(e);
-    const badgeCls = st === 'active' ? 'badge-ok' : st === 'expired' ? 'badge-err' : 'badge-warn';
-    const badgeTxt = st === 'active' ? 'Aktif' : st === 'expired' ? 'Expired' : 'One-time';
-    const scans = Object.keys(e.usedBy || {}).length;
-    const dateStr = e.date ? new Date(e.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-    const expiryStr = e.expiry === 0 ? 'one-time' : e.expiry + ' jam';
+  if (!acaraCache.length) {
+    el.innerHTML = '<div class="card" style="color:var(--text3);font-size:13px;text-align:center">Belum ada acara.</div>';
+    return;
+  }
+  el.innerHTML = acaraCache.map(ev => {
+    const expired = ev.isExpired;
+    const days    = ev.expiryDays;
+    let expiryLabel = '';
+    if (days === 0) {
+      expiryLabel = '1× Pakai';
+    } else if (ev.expiryAt) {
+      const sisa = Math.ceil((new Date(ev.expiryAt).getTime() - Date.now()) / 86400000);
+      expiryLabel = expired ? 'Expired' : `${sisa > 0 ? sisa : 0}h lagi`;
+    }
     return `
-    <div class="event-item">
-      <div class="event-content">
-        <div class="event-name">${e.name}</div>
-        <div class="event-meta">${dateStr} · ${expiryStr} · ${scans} scan</div>
-        <span class="badge ${badgeCls}">${badgeTxt}</span>
+    <div class="acara-card">
+      <div class="acara-top">
+        <div class="acara-info">
+          <div class="acara-nama">${ev.nama}</div>
+          <div class="acara-meta">${ev.tanggal ? formatTgl(ev.tanggal) : 'Tanpa tanggal'}</div>
+        </div>
+        <div class="acara-actions">
+          <button class="btn btn-sm${expired ? ' btn-danger' : ''}" onclick="openQR('${ev.id}')" title="Lihat QR">QR</button>
+          <button class="btn btn-sm btn-danger" onclick="hapusAcara('${ev.id}')" title="Hapus">✕</button>
+        </div>
       </div>
-      <div class="event-actions">
-        <button class="btn btn-sm" onclick="openQR('${e.id}')">QR</button>
-        <button class="btn btn-sm btn-danger" onclick="delEvent('${e.id}')">✕</button>
+      <div class="acara-footer">
+        <span class="expiry-badge ${expired ? 'expiry-expired' : 'expiry-active'}">
+          ${expired ? '✗' : '✓'} ${expiryLabel}
+        </span>
+        <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">
+          ${Object.keys(ev.usedBy||{}).length} akses
+        </span>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderStaff() {
-  document.getElementById('staff-count').textContent = staff.length;
-  const el = document.getElementById('staff-list');
-  if (!staff.length) { el.innerHTML = '<div class="empty">Belum ada staf. Tambah di atas.</div>'; return; }
-  el.innerHTML = staff.map(s => {
-    const initials = s.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    return `
-    <div class="staff-item">
-      <div class="avatar">${initials}</div>
-      <div class="staff-content">
-        <div class="staff-name">${s.name}</div>
-        <div class="staff-email">${s.email}</div>
-      </div>
-      <button class="btn btn-sm btn-danger" onclick="delStaff('${s.id}')">✕</button>
-    </div>`;
-  }).join('');
+async function simpanAcara() {
+  const nama       = document.getElementById('ac-nama').value.trim();
+  const driveUrl   = document.getElementById('ac-url').value.trim();
+  const tanggal    = document.getElementById('ac-tgl').value;
+  const expiryDays = document.querySelector('#ac-expiry-group .expiry-pill.active')?.dataset.val ?? '1';
+  if (!nama || !driveUrl) return showToast('Nama dan link Drive wajib diisi');
+  const r = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'addAcara', nama, driveUrl, tanggal, expiryDays }) });
+  const d = await r.json();
+  if (d.ok) {
+    showToast('Acara disimpan ✓');
+    document.getElementById('ac-nama').value = '';
+    document.getElementById('ac-url').value  = '';
+    document.getElementById('ac-tgl').value  = '';
+    // reset pill ke 1 hari
+    document.querySelectorAll('#ac-expiry-group .expiry-pill').forEach((p,i) => p.classList.toggle('active', i===0));
+    loadAcara();
+  } else { showToast(d.msg || 'Gagal menyimpan'); }
 }
 
-function renderLogs() {
-  const el = document.getElementById('log-list');
-  if (!logs.length) { el.innerHTML = '<div class="empty">Belum ada riwayat akses.</div>'; return; }
-  el.innerHTML = [...logs].reverse().map(l => {
-    const badge = l.ok ? '<span class="badge badge-ok">✓ Diterima</span>' : '<span class="badge badge-err">✗ Ditolak</span>';
-    const timeStr = new Date(l.ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-    const dateStr = new Date(l.ts).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-    return `
-    <div class="log-item">
-      <div>
-        ${badge}
-        <div class="log-name" style="margin-top:4px">${l.email}</div>
-        <div class="log-meta">${l.event}${l.reason ? ' · ' + l.reason : ''}</div>
-      </div>
-      <div class="log-time">${dateStr}<br>${timeStr}</div>
-    </div>`;
-  }).join('');
-}
-
-// ─── ACARA CRUD ───────────────────────────────────────
-function addEvent() {
-  const name   = document.getElementById('ev-name').value.trim();
-  const date   = document.getElementById('ev-date').value;
-  const url    = document.getElementById('ev-url').value.trim();
-  const expiry = parseInt(document.getElementById('ev-expiry').value);
-  if (!name || !url) { showToast('Nama dan link Drive wajib diisi'); return; }
-  events.push({ id: 'e' + Date.now(), name, date, url, expiry, usedBy: {}, createdAt: Date.now() });
-  document.getElementById('ev-name').value = '';
-  document.getElementById('ev-date').value = '';
-  document.getElementById('ev-url').value  = '';
-  save(); render();
-  showToast('Acara berhasil ditambahkan');
-}
-
-function delEvent(id) {
+async function hapusAcara(id) {
   if (!confirm('Hapus acara ini?')) return;
-  events = events.filter(e => e.id !== id);
-  save(); render();
+  await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'delAcara', id }) });
+  showToast('Acara dihapus');
+  loadAcara();
 }
 
-// ─── STAF CRUD ────────────────────────────────────────
-function addStaff() {
-  const name  = document.getElementById('sf-name').value.trim();
-  const email = document.getElementById('sf-email').value.trim().toLowerCase();
-  if (!name || !email) { showToast('Nama dan email wajib diisi'); return; }
-  if (staff.find(s => s.email === email)) { showToast('Email sudah terdaftar'); return; }
-  staff.push({ id: 's' + Date.now(), name, email });
-  document.getElementById('sf-name').value  = '';
-  document.getElementById('sf-email').value = '';
-  save(); render();
-  showToast('Staf berhasil ditambahkan');
+function selectExpiry(pill) {
+  document.querySelectorAll('#ac-expiry-group .expiry-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
 }
 
-function delStaff(id) {
-  staff = staff.filter(s => s.id !== id);
-  save(); render();
-  showToast('Staf dihapus');
+function selectModalExpiry(pill) {
+  document.querySelectorAll('#modal-expiry-group .expiry-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
 }
 
-function exportStaff() {
-  const csv = 'Nama,Email\n' + staff.map(s => `${s.name},${s.email}`).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'staf_protokol.csv'; a.click();
+// ── STAF ────────────────────────────────────
+async function loadStaf() {
+  try {
+    const r = await fetch(`${API_URL}?action=getStaf`);
+    const d = await r.json();
+    stafCache = d.data || [];
+    renderStaf();
+  } catch(_) { showToast('Gagal memuat staf'); }
 }
 
-// ─── VERIFIKASI ───────────────────────────────────────
+function renderStaf() {
+  const el = document.getElementById('staff-list');
+  if (!stafCache.length) {
+    el.innerHTML = '<div class="card" style="color:var(--text3);font-size:13px;text-align:center">Belum ada staf.</div>';
+    return;
+  }
+  el.innerHTML = stafCache.map(s => {
+    const ini = s.nama.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `
+    <div class="staf-card" id="scard-${s.id}">
+      <div class="staf-avatar">${ini}</div>
+      <div class="staf-info">
+        <div class="staf-nama">${s.nama}</div>
+        <div class="staf-email">${s.email}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="delStaf('${s.id}')" style="border-radius:50%;width:30px;height:30px;padding:0;flex-shrink:0">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function simpanStaf() {
+  const nama  = document.getElementById('st-nama').value.trim();
+  const email = document.getElementById('st-email').value.trim();
+  if (!nama || !email) return showToast('Lengkapi nama dan email');
+  const r = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'addStaf', nama, email }) });
+  const d = await r.json();
+  if (d.ok) {
+    showToast('Staf ditambah ✓');
+    document.getElementById('st-nama').value  = '';
+    document.getElementById('st-email').value = '';
+    loadStaf();
+  } else { showToast(d.msg || 'Gagal menambah staf'); }
+}
+
+async function delStaf(id) {
+  if (!confirm('Hapus staf ini?')) return;
+  const card = document.getElementById(`scard-${id}`);
+  if (card) card.style.opacity = '.3';
+  const r = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'delStaf', id }) });
+  const d = await r.json();
+  if (d.ok) {
+    showToast('Staf dihapus');
+    stafCache = stafCache.filter(s => s.id !== id);
+    renderStaf();
+  } else {
+    if (card) card.style.opacity = '1';
+    showToast('Gagal hapus');
+  }
+}
+
+// ── VERIFIKASI MANUAL ────────────────────────
 function populateScanSelect() {
   const sel = document.getElementById('scan-ev-sel');
-  sel.innerHTML = '<option value="">— Pilih acara —</option>' +
-    events.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
+  sel.innerHTML = '<option value="">Pilih Acara...</option>' +
+    acaraCache.map(e => `<option value="${e.id}">${e.nama}${e.isExpired?' (expired)':''}</option>`).join('');
 }
 
-function doVerify() {
-  const evId  = document.getElementById('scan-ev-sel').value;
-  const email = document.getElementById('scan-email').value.trim().toLowerCase();
-  const out   = document.getElementById('scan-output');
-  if (!evId || !email) { showToast('Pilih acara dan masukkan email'); return; }
-  const ev = events.find(e => e.id === evId);
-  if (!ev) return;
-  const isStaff    = staff.find(s => s.email === email);
-  const age        = (Date.now() - ev.createdAt) / 3600000;
-  const isExpired  = ev.expiry > 0 && age >= ev.expiry;
-  const isUsed     = ev.expiry === 0 && ev.usedBy && ev.usedBy[email];
-  let ok = false, reason = '';
-  if (!isStaff)   reason = 'Email tidak terdaftar sebagai staf';
-  else if (isExpired) reason = 'QR code sudah expired';
-  else if (isUsed)    reason = 'Sudah digunakan (one-time)';
-  else { ok = true; if (!ev.usedBy) ev.usedBy = {}; ev.usedBy[email] = Date.now(); }
-  logs.push({ ts: Date.now(), email, event: ev.name, ok, reason });
-  save(); render();
-  if (ok) {
-    out.innerHTML = `<div class="scan-result ok">
-      <div class="scan-icon">✅</div>
-      <div class="scan-title" style="color:var(--accent)">Akses Diberikan</div>
-      <div class="scan-sub" style="color:var(--accent)">${ev.name}</div>
-      <a href="${ev.url}" target="_blank" class="scan-link">Buka Google Drive Rundown →</a>
-    </div>`;
-  } else {
-    out.innerHTML = `<div class="scan-result fail">
-      <div class="scan-icon">🚫</div>
-      <div class="scan-title" style="color:var(--danger)">Akses Ditolak</div>
-      <div class="scan-sub" style="color:var(--danger)">${reason}</div>
-    </div>`;
-  }
+async function doVerify(e) {
+  const eventId = document.getElementById('scan-ev-sel').value;
+  const email   = document.getElementById('scan-email').value.trim();
+  if (!eventId || !email) return showToast('Pilih acara dan isi email');
+  const btn = e.target;
+  const ori = btn.textContent;
+  btn.textContent = 'Memproses...'; btn.disabled = true;
+  try {
+    const r = await fetch(`${API_URL}?action=verify&eventId=${encodeURIComponent(eventId)}&email=${encodeURIComponent(email)}`);
+    const d = await r.json();
+    const out = document.getElementById('scan-output');
+    if (d.ok) {
+      out.innerHTML = `<div class="card" style="background:var(--accent-light);border-color:var(--accent);color:var(--accent)">
+        <div style="font-weight:600;margin-bottom:4px">✓ Verifikasi Berhasil</div>
+        <div style="font-size:13px;margin-bottom:12px">${d.namaAcara}</div>
+        <a href="${d.driveUrl}" target="_blank" class="btn btn-primary" style="text-decoration:none">Buka Rundown →</a>
+      </div>`;
+      showToast('Akses diberikan ✓');
+    } else {
+      out.innerHTML = `<div class="card" style="background:var(--danger-light);border-color:var(--danger);color:var(--danger)">
+        <strong>Ditolak:</strong> ${d.msg}
+      </div>`;
+    }
+  } catch(_) { showToast('Koneksi gagal'); }
+  finally { btn.textContent = ori; btn.disabled = false; loadLog(); }
 }
 
-// ─── LOGS ─────────────────────────────────────────────
-function clearLogs() {
-  if (!confirm('Hapus semua riwayat?')) return;
-  logs = []; save(); render();
+// ── LOG ──────────────────────────────────────
+async function loadLog() {
+  try {
+    const r = await fetch(`${API_URL}?action=getLog`);
+    const d = await r.json();
+    const el = document.getElementById('log-list');
+    const rows = (d.data||[]).slice().reverse();
+    if (!rows.length) { el.innerHTML = '<span style="color:var(--text3);font-size:13px">Belum ada data.</span>'; return; }
+    el.innerHTML = rows.map(l => `
+      <div class="log-row">
+        <div class="log-icon ${l.ok ? 'log-ok-icon':'log-fail-icon'}">${l.ok?'✓':'✗'}</div>
+        <span class="log-email">${l.email}</span>
+        <span class="log-acara">${l.acara}</span>
+      </div>`).join('');
+  } catch(_) {}
 }
 
-// ─── QR MODAL ─────────────────────────────────────────
-let activeQREventId = null;
+async function doClearLog() {
+  if (!confirm('Hapus semua log?')) return;
+  await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'clearLog' }) });
+  showToast('Log dihapus');
+  loadLog();
+}
 
+// ── QR MODAL ─────────────────────────────────
 function openQR(id) {
-  const ev = events.find(e => e.id === id);
+  const ev = acaraCache.find(e => e.id === id);
   if (!ev) return;
-  activeQREventId = id;
-  document.getElementById('qr-modal-name').textContent = ev.name;
-  const expiryStr = ev.expiry === 0 ? 'One-time use per email' : `Berlaku ${ev.expiry} jam`;
-  const dateStr = ev.date ? ' · ' + new Date(ev.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-  document.getElementById('qr-modal-meta').textContent = expiryStr + dateStr;
+  activeQRId = id;
+
+  document.getElementById('qr-modal-name').textContent = ev.nama;
+  document.getElementById('qr-modal-sub').textContent  = ev.tanggal ? formatTgl(ev.tanggal) : 'Scan untuk akses rundown';
+
   const container = document.getElementById('qr-render');
   container.innerHTML = '';
-  const url = `${location.origin}${location.pathname}?scan=${ev.id}&ts=${Date.now()}`;
-  try {
-    new QRCode(container, { text: url, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.H });
-  } catch(e) {
-    container.innerHTML = '<div style="width:200px;height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999;text-align:center;border-radius:8px;">QR tidak dapat dirender.<br>Unduh untuk melihat.</div>';
-  }
+  const qrUrl = window.location.origin + window.location.pathname + '?eventId=' + encodeURIComponent(id);
+  new QRCode(container, { text: qrUrl, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+
+  // Set pill default ke durasi acara saat ini
+  const days = String(ev.expiryDays);
+  document.querySelectorAll('#modal-expiry-group .expiry-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.val === days);
+  });
+
   document.getElementById('qr-modal').classList.add('open');
 }
 
-function closeModal() {
+function closeQR() {
   document.getElementById('qr-modal').classList.remove('open');
-}
-
-function handleModalClick(e) {
-  if (e.target === document.getElementById('qr-modal')) closeModal();
+  activeQRId = null;
 }
 
 function downloadQR() {
-  const img = document.querySelector('#qr-render img');
-  const canvas = document.querySelector('#qr-render canvas');
-  const ev = events.find(e => e.id === activeQREventId);
-  const fname = (ev ? ev.name.replace(/\s+/g,'_') : 'QR') + '_rundown.png';
-  if (img) {
-    const a = document.createElement('a'); a.href = img.src; a.download = fname; a.click();
-  } else if (canvas) {
-    const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = fname; a.click();
-  }
+  setTimeout(() => {
+    const canvas = document.querySelector('#qr-render canvas');
+    if (!canvas) return showToast('QR belum siap');
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'QR_Protokol.png';
+    a.click();
+  }, 100);
 }
 
-// ─── TOAST ────────────────────────────────────────────
-function showToast(msg) {
+async function doResetExpiry() {
+  if (!activeQRId) return;
+  const expiryDays = document.querySelector('#modal-expiry-group .expiry-pill.active')?.dataset.val ?? '1';
+  if (!confirm(`Reset & aktifkan ulang QR selama ${expiryDays == 0 ? '1× pakai' : expiryDays + ' hari'}?`)) return;
+
+  const btn = document.querySelector('#qr-modal .btn-warn');
+  btn.textContent = 'Memproses...'; btn.disabled = true;
+
+  try {
+    const r = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'resetExpiry', id: activeQRId, expiryDays }) });
+    const d = await r.json();
+    if (d.ok) {
+      showToast('QR berhasil direset & diaktifkan ulang ✓');
+      await loadAcara();
+      closeQR();
+    } else { showToast(d.msg || 'Gagal reset'); }
+  } catch(_) { showToast('Koneksi gagal'); }
+  finally { btn.textContent = 'Reset & Aktifkan Ulang QR'; btn.disabled = false; }
+}
+
+// ── HELPERS ──────────────────────────────────
+function formatTgl(str) {
+  if (!str) return '';
+  const [y,m,d] = str.split('-');
+  return `${parseInt(d)} ${'Jan Feb Mar Apr Mei Jun Jul Agt Sep Okt Nov Des'.split(' ')[parseInt(m)-1]} ${y}`;
+}
+
+function showToast(m) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  t.textContent = m; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
-
-// ─── INIT ─────────────────────────────────────────────
-render();
 </script>
 </body>
 </html>
